@@ -756,6 +756,7 @@
           <button class="showcase-tab" onclick="switchSnippet(1)">2. Z3 SMT Refinements</button>
           <button class="showcase-tab" onclick="switchSnippet(2)">3. Bare-Metal & Pointers</button>
           <button class="showcase-tab" onclick="switchSnippet(3)">4. Concurrency Channels</button>
+          <button class="showcase-tab" onclick="switchSnippet(4)">5. Java-Style Enterprise (.nv &amp; .nova)</button>
         </div>
         <div class="showcase-content">
           <pre class="code-view" id="codeView"></pre>
@@ -964,7 +965,7 @@
     const installCommands = {
       unix: 'curl -fsSL https://raw.githubusercontent.com/novasystems-dev/nova/master/install.sh | bash',
       win: 'irm https://raw.githubusercontent.com/novasystems-dev/nova/master/install.ps1 | iex',
-      orbit: 'orbit init my_project && orbit build --release',
+      orbit: 'orbit new my_enterprise_app && cd my_enterprise_app && orbit build && orbit run',
       docker: 'docker run -it novasystems/nova:latest novac --version'
     };
 
@@ -1066,6 +1067,37 @@ VGA Direct Memory Written Successfully`
 [novac] Data-race freedom proven at compile time.
 [native] Spawning M:N green thread fiber runtime...
 Received: Telemetry data from Fiber #1`
+      },
+      {
+        code: `<span class="cmt">// 5. Java-Style Modular Enterprise Architecture</span>
+<span class="cmt">// Source files: *.nv  |  Compiled native bundle: *.nova</span>
+<span class="kwd">import</span> config.app_config { <span class="typ">AppConfig</span>, <span class="fn">make_default_app_config</span> }
+<span class="kwd">import</span> models.account { <span class="typ">Account</span>, <span class="fn">account_deposit</span> }
+<span class="kwd">import</span> service.transfer_service { <span class="fn">transfer_service_execute</span> }
+<span class="kwd">import</span> controllers.auth_controller { <span class="fn">auth_controller_login</span> }
+
+<span class="kwd">pub fn</span> <span class="fn">main</span>():
+    <span class="cmt">// 30 modular *.nv files organized into Controller/Service/Repo/DTO</span>
+    <span class="kwd">let</span> cfg = <span class="fn">make_default_app_config</span>()
+    <span class="kwd">let</span> auth = <span class="fn">auth_controller_login</span>(<span class="str">"alice"</span>, <span class="str">"sec123"</span>, <span class="str">"10.0.0.1"</span>)
+    io.<span class="fn">println</span>(<span class="str">"Cloud Banking Service running on port "</span> + <span class="fn">str</span>(cfg.server_port))`,
+        output: `[orbit build] Scanning 30 modular *.nv files in src/
+[novac] Compiling enterprise_service (C99/LLVM Native Backend)...
+[novac] -> Native Executable Bundle: target/release/enterprise_service.nova
+[orbit run] Executing target/release/enterprise_service.nova...
+==========================================================
+  NOVA CLOUD BANKING & HIGH-ASSURANCE LEDGER SERVICE
+  Java-Style Modular Enterprise Architecture (30 Modules)
+==========================================================
+[1/6] Config: Initialized server on port: 8443 (db: nova_cloud_banking)
+[2/6] Health: Liveness Status=200, Readiness Status=200
+[3/6] Middleware: RateLimiter Active=TRUE, CORS Allowed=TRUE
+[4/6] Auth: Token issued successfully (User ID: 1, Role: ADMIN)
+[5/6] Account: Retrieved account number: US99NOVA0000000101
+[6/6] Transfer: Transfer status: Transfer completed successfully
+==========================================================
+  ENTERPRISE MULTI-MODULE TEST: ALL 30 MODULES VERIFIED!
+==========================================================`
       }
     ];
 
